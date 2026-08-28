@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install sphinx furo
+          pip install sphinx furo myst-parser
 
       - name: Build HTML Pages
         run: |
