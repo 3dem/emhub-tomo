@@ -6,13 +6,8 @@
 Welcome to EMhub-Tomo!
 ======================
 
-.. |logo_image| image:: images/emhub-tomo-logo-top.png
-   :height: 200px
-
-|logo_image|
-
 EMhub-Tomo is a platform for CryoET data processing that facilitates the execution of heterogenous pipelines in a flexible and structured way.
-It is based on the `emwrap`_ library, which provides Python wrappers for executing external programs in a consistent way. 
+It is based on the **emwrap** library, which provides Python wrappers for executing external programs in a consistent way. 
 Proccessing jobs and projects are compatible with the Relion data model. While the basic definition of jobs, with an input arguments file and an output folder, 
 complies with the definition of external jobs in Relion.
 
@@ -20,13 +15,13 @@ complies with the definition of external jobs in Relion.
 Installation
 ------------
 
-.. code-block:: bash
+Installing and running EMhub-Tomo takes three easy steps:
 
-   # Download and run the install script
-   mkdir miniconda3 && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && bash ./miniconda.sh -b -u -p ./miniconda3
+#. Create a Python environment and install the sources.
+#. Configure the program launchers and cluster queues for your site.
+#. There is no third step.
 
-
-Once you have conda activated, you can install emwrap with the following commands:
+EMhub-Tomo needs Python 3.8, available through either an active conda environment or a plain Python venv -- the install script auto-detects whichever one is active. See :doc:`python_environment` for how to install conda, or use a venv instead.
 
 .. code-block:: bash
 
@@ -34,297 +29,97 @@ Once you have conda activated, you can install emwrap with the following command
    mkdir emstack && cd emstack
 
    # Create a conda environment and activate it
-   conda create -y --name=emstack python=3.8 && conda activate emstack
+   conda create -y --name=emhub-tomo python=3.8 && conda activate emhub-tomo
 
    # Download and run the install script
    wget -qO- https://raw.githubusercontent.com/3dem/emwrap/refs/heads/main/install.sh | bash
 
-   # Run the server
-   ./run.sh
+The install script clones the `emtools`, `emhub`, and `emwrap` repositories into a `source` folder, generates a `bashrc` file to (re)activate the detected conda/venv environment, and generates an executable `emh-tomo` script in the installation folder. As its last step, the installer also runs `./emh-tomo --update` to set up the configuration files -- see `Configuration`_ below to adapt the program launchers and cluster queues to your site.
 
-
-Configuration
---------------
-
-The installation script will create a `emwrap.bashrc` file in the installation folder. This is the main configuration file
-that has references to other files and settings. From there, the `bashrc` file is sourced to load the required Python/Conda
-environment. The environment variable `EMWRAP_CONFIG` is defined in the `emwrap.bashrc` file, as a JSON literal. You should 
-modify its content to adapt to your computing needs regarding programs, queues, and other settings. 
-
-Python Environment
-------------------
-
-While running the installation, the install script will try to determine the Conda path and the activated environment (usually `emstack`).
-Based on that, it will create the `bashrc` file that will be sourced from `emwrap.bashrc`. If you are not using Conda or the `bashrc` file is not correct, you should modify it to properly load the Python environment for launching **emhub/emwrap**.
+Once configured, run the server with:
 
 .. code-block:: bash
 
-   # Edit the bashrc file
-   vim bashrc
+   ./emh-tomo --run
+
+`./emh-tomo --run` starts the emhub instance stored at `~/.emhub/instances/tomo` (creating it the first time from a minimal instance, together with the processing "extra" files shipped with emhub). The server is started on a free port chosen automatically and printed in green, together with a ready-to-use `ssh -L` tunnel command for connecting from a client machine when EMhub-Tomo runs on a remote or HPC host. The admin user is logged in automatically, so no login step is required for this use case.
+
+
+Configuration
+-------------
+
+`./emh-tomo --update` creates a `emwrap.bashrc` file in the installation folder if it does not exist yet (this happens automatically once at the end of the installation). 
+This is the main configuration file that has references to other files and settings. 
+From there, the `bashrc` file is sourced to load the required Python/Conda
+environment. The environment variable `EMWRAP_CONFIG` is defined in the `emwrap.bashrc` file, as a JSON literal. You should
+modify its content to adapt to your computing needs regarding programs, queues, and other settings.
+
+.. code-block:: bash
+
+   # Update the configuration files and pull the latest changes for the
+   # emtools/emhub/emwrap source checkouts
+   ./emh-tomo --update
+
+   # Inspect or validate the current configuration
+   ./emh-tomo --config list
+   ./emh-tomo --config check
+
+See :doc:`launchers` and :doc:`queues` for how to configure program launchers and cluster queues in detail.
 
 Program Launchers
 -----------------
 
-In **emwrap**, external programs can be defined by specifying "program launchers". The idea of the launcher is to create a bash script that wraps the program call and sets up the necessary environment. For example, the launcher can load cluster modules, source bash files, or set up environment variables. In that way, the code from **emwrap** just needs to call the launcher without taking care of local installation details. 
+In **emwrap**, external programs can be defined by specifying "program launchers": bash scripts that wrap a program call and set up whatever environment it needs (loading cluster modules, sourcing other bash files, setting environment variables, etc.), so that **emwrap** itself does not need to know about local installation details.
 
-There is a section in the *EMWRAP_CONFIG* variable related to the launchers: 
+Launchers are configured in the *programs* section of the *EMWRAP_CONFIG* variable, and after installation a *scripts* folder is created with example launcher scripts that you will likely need to adapt to your environment.
 
-.. code-block:: json
-
-   "programs": {
-        "WARP": {"launcher": "$SCRIPTS/warp_launcher.sh"},
-        "PYTOM": {"launcher": "$SCRIPTS/pytom_launcher.sh"},
-        "RELION": {"launcher": "$SCRIPTS/relion_launcher.sh"},
-        "IMOD": {"launcher": "$SCRIPTS/imod_launcher.sh"},
-        "MOTIONCOR2": {"launcher": "$SCRIPTS/motioncor2.sh"},
-        "MOTIONCOR3": {"launcher": "$SCRIPTS/motioncor3.sh"},
-        "ARETOMO2": {"launcher": "$SCRIPTS/aretomo2.sh"},
-        "ARETOMO3": {"launcher": "$SCRIPTS/aretomo3.sh"},
-        "CTFFIND": {"launcher": "$SCRIPTS/ctffind5.sh", "version": 5},
-        "CRYOCARE": {"launcher": "$SCRIPTS/cryocare_launcher.sh"}
-    }
-
-After the installation, there is a *scripts* folder that is created with some of the launcher scripts, but YOU MIGHT NEED TO MODIFY them to work in your environment. In the following subsections, there are some examples of launchers.
-
-Warp Launcher
-.............
-
-In the following example, Warp is loaded from the available modules, together with Aretomo2, version 1.0.0.
-
-.. code-block:: bash
-
-   #!/bin/bash
-
-   PROGRAM=$1
-   shift
-
-   export MODULES="warp/2.0dev33-latest aretomo2/1.0.0"
-   echo Loading modules $MODULES
-   module load -s $MODULES
-
-   $PROGRAM $@
-
-Or, if we are loading Warp from an SBGrid installation, the launcher could be something like:
-
-.. code-block:: bash
-
-   #!/bin/bash
-
-   PROGRAM=$1
-   shift
-
-   export SBGRID=/programs/sbgrid.shrc
-   source $SBGRID
-   echo "Loading Warp from SBGrid file: ${SBGRID}."
-
-   $PROGRAM $@
-
-Relion Launcher
-...............
-
-In the case of the Relion launcher, the first argument is the program name, and the second is the number of MPI processes. The wrapper will take care of adding the *_mpi* suffix to the program and also the *mpirun* command. For example:
-
-.. code-block:: bash
-
-    #!/bin/bash
-
-    export SBGRID=/programs/sbgrid.shrc
-    source $SBGRID
-    echo "Loading Relion from SBGrid file: ${SBGRID}."
-
-    export PROGRAM=$1
-    shift
-    export MPI=$1
-    shift
-
-    if [ "$MPI" -eq 1 ]; then
-        export CMD="${PROGRAM} $@"
-    else
-        export CMD="mpirun.relion --oversubscribe -np ${MPI} ${PROGRAM}_mpi $@"
-    fi
-
-    echo Running command: ${CMD}
-    $CMD
-
-Other Launchers
-...............
-
-**emwrap** is still under development, and more tools will be integrated in the future. Right now, apart from Warp and Relion, it might be helpful to configure the following launchers:
-
-* PyTOM launcher: for 3D template matching
-* IMOD launcher: for etomo tilt-series alignment
+See :doc:`launchers` for the *programs* configuration example and detailed launcher examples (Warp, Relion, and others).
 
 
 Cluster Queues
 --------------
 
-After the program launchers, the next section is the definition of cluster queues. You can define as many queues as you need, and each queue can have a different template, submit command, and parameters. 
-The following is an example defining three queues: two of them use LSF and the third one uses SLURM. In one of the queues, it is possible to select the GPU type for the job.
+After the program launchers, the next section of *EMWRAP_CONFIG* is the definition of cluster queues. You can define as many queues as you need, and each queue can have a different job script template, submit command, and parameters (for example, letting the user pick a GPU type).
 
-.. code-block:: json
-
-    "queues": [
-        {
-            "name": "cryoem",
-            "template": "$SCRIPTS/lsf_template.sh",
-            "submit": "$SCRIPTS/lsf_submit.sh {job_script}",
-            "params": [
-                {
-                    "name": "queue_name",
-                    "default": "cryoem",
-                    "condition": "false"
-                },
-                {
-                    "name": "gpu_type",
-                    "label": "GPU type",
-                    "help": "Select the GPU type if you need an specific one for this job.",
-                    "default": "any",
-                    "paramClass": "EnumParam",
-                    "choices": ["any", "V100", "A100"]
-                }
-            ]
-        },
-        {
-            "name": "cryo_core",
-            "template": "$SCRIPTS/lsf_template.sh",
-            "submit": "$SCRIPTS/lsf_submit.sh {job_script}",
-            "params": [
-                {
-                    "name": "queue_name",
-                    "default": "cryo_core",
-                    "condition": "false"
-                }
-            ]
-        },
-        {
-            "name": "rtx5000",
-            "template": "$SCRIPTS/slurm_rtx5000_template.sh",
-            "submit": "sbatch {job_script}",
-            "params": [
-                {
-                    "name": "queue_name",
-                    "default": "rtx5000",
-                    "condition": "false"
-                }
-            ]
-        }
-    ]
-
-Job Script Template
-...................
-
-For each queue, a submission template is required to create the job script for each job. The template is a bash script that will be executed by the cluster scheduler. All the parameters defined in the queue will be passed in 
-a dictionary to the template. Additional parameters that will be accessible to the template (and submit command) are:
-
-* **jobId**: the project job id (and folder) not the scheduler job id
-* **command**: the command to execute
-* **gpu_line**: this is specific for LSF clusters, where CPU only jobs avoid the line for GPU requests. 
-* **job_id**: the job id
-* **gpus**: number of GPUs requested by the job.
-* **cpus**: number of CPUs requested by the job.
-* **working_dir**: the working directory for the job (the project folder).
-* **job_out**: the path to the job output file.
-* **job_err**: the path to the job error file.
-
-The following is an example of a SLURM template:
-
-.. code-block:: bash
-
-    #!/bin/bash
-
-    #SBATCH --partition={queue_name}
-    #SBATCH --nodes=1
-    #SBATCH --tasks=1
-    #SBATCH --cpus-per-task={cpus}
-    #SBATCH --gres=gpu:{gpus}
-    #SBATCH --mem=200G
-    #SBATCH --output={job_out}
-    #SBATCH --error={job_err}
-
-    cd {working_dir}
-    hostname -f
-    {command}
-
-And the following is an example of a LSF template:
-
-.. code-block:: bash
-
-    #!/bin/bash
-
-    #BSUB -P emwrap-tomo
-    {gpu_line}
-    #BSUB -R "rusage[mem=5000]"
-    #BSUB -q {queue_name}
-    #BSUB -n {cpus}
-    #BSUB -R "span[ptile={cpus}]"
-    #BSUB -e {working_dir}/{jobId}/run.err -o {working_dir}/{jobId}/run.out
-
-    cd {working_dir}
-    hostname -f
-    {command}
+See :doc:`queues` for the *queues* configuration example and details on writing job script templates (including SLURM and LSF examples).
 
 
-Workflows
----------
+Jobs and Workflows
+--------------------
+
+Processing jobs in EMhub-Tomo follow the same convention as Relion's `External job type`_: each job runs in its own job folder with an input arguments file and writes to an output folder, reporting success or failure the same way a native Relion job would -- so pipelines built from EMhub-Tomo jobs stay visible and reusable from within Relion itself.
+
+.. _External job type: https://relion.readthedocs.io/en/release-5.0/Reference/Using-RELION.html#the-external-job-type
+
+On top of that convention, each job type ships its own ``form.json`` file (see ``emwrap/config/forms``) describing the parameters shown to the user and how they are organized in the Form UI. See :doc:`job_forms` for the full reference.
 
 **WORK IN PROGRESS**
 
-Workflows are defined in the `workflows` folder. Each workflow is a JSON file that defines the jobs to be executed in sequence. The jobs are defined by their type and the parameters to be passed to them. 
-The idea is that from EMhub-Tomo, processing pipelines can be exported as workflows and reused in other projects. 
+Workflows are defined in the `workflows` folder. Each workflow is a JSON file that defines the jobs to be executed in sequence, together with the parameters passed to each. The idea is that processing pipelines built in EMhub-Tomo can be exported as workflows and reused in other projects.
 
-
-Tomography
-==========
-
-.. _Warp: https://warpem.github.io/
-.. _PyTOM: https://github.com/SBC-Utrecht/pytom-match-pick
-.. _Relion: https://relion.readthedocs.io/en/latest/STA_tutorial/Introduction.html
-
-.. list-table:: Jobs
-   :header-rows: 1
-   :widths: 30 10 10 10
-
-   * - Job
-     - Description
-     - Commands
-     - Packages
-   * - emw-import-ts
-     - Import raw frames and MDOC files
-     - 
-     - emwrap
-   * - emw-warp-mctf
-     - Warp's motion correction and CTF
-     - create_settings, fs_motion_and_ctf
-     - `Warp`_
-   * - emw-warp-aretomo
-     - Tilt series alignment with Aretomo through Warp's wrapper.
-     - ts_import, create_settings, ts_aretomo
-     - `Warp`_, AreTomo2
-   * - emw-warp-ctfrec
-     - Warp 3D CTF and reconstruction
-     - ts_ctf, ts_reconstruct
-     - `Warp`_
-   * - emw-warp-pytom
-     - Particle picking by template matching 
-     - pytom_match_pick, pytom_extract
-     - `PyTOM`_
-   * - emw-relion-tomorecons
-     - Reconstruct an initial volume from input sub-tomograms
-     - WORK-IN-PROGRESS
-     - `Relion`_
-   * - emw-relion-tomorefine
-     - 3D Refine sub-tomogram particles
-     - WORK-IN-PROGRESS
-     - `Relion`_
-
-
-    
+See :doc:`tomography_jobs` for the job types currently implemented for CryoET processing, grouped by the package they wrap (Warp, Relion, PyTOM, AreTomo, and emwrap's own jobs).
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Table of Contents
+   :hidden:
 
-   intro_rst
+   Overview <self>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Installation
+   :hidden:
+
+   python_environment
+   launchers
+   queues
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Jobs
+   :hidden:
+
+   job_forms
+   tomography_jobs
 
 

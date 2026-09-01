@@ -1,0 +1,22 @@
+/* Furo renders the sidebar logo (see sidebar/brand.html, class
+   "sidebar-logo") at "max-width: 100%" of the sidebar's content width,
+   with height following automatically to preserve its aspect ratio
+   (src/furo/assets/styles/components/_sidebar.sass). Capping max-width at
+   60% therefore scales the displayed height down to ~60% as well. */
+.sidebar-logo {
+    max-width: 60%;
+}
+
+/* Keep the sidebar navigation tree fully expanded on every page, instead
+   of only expanding the branch containing the current page (Furo's
+   default). Furo implements collapsing purely in CSS: each branch with
+   children gets a hidden ".toctree-checkbox" and its nested "<ul>" is
+   "display: none" unless that checkbox is ":checked" (which Furo only
+   does for the current page's ancestor branch -- see
+   src/furo/assets/styles/components/_sidebar.sass and
+   src/furo/navigation.py). Forcing the nested list to always display
+   makes every top-level section's pages stay visible regardless of which
+   page is currently open. */
+.toctree-checkbox ~ ul {
+    display: block !important;
+}
