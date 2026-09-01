@@ -32,7 +32,7 @@ EMhub-Tomo needs Python 3.8, available through either an active conda environmen
    conda create -y --name=emhub-tomo python=3.8 && conda activate emhub-tomo
 
    # Download and run the install script
-   wget -qO- https://raw.githubusercontent.com/3dem/emwrap/refs/heads/main/install.sh | bash
+   wget -qO- https://3dem.github.io/emhub-tomo/install.sh | bash
 
 The install script clones the `emtools`, `emhub`, and `emwrap` repositories into a `source` folder, generates a `bashrc` file to (re)activate the detected conda/venv environment, and generates an executable `emh-tomo` script in the installation folder. As its last step, the installer also runs `./emh-tomo --update` to set up the configuration files -- see `Configuration`_ below to adapt the program launchers and cluster queues to your site.
 

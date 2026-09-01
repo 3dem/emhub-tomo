@@ -29,6 +29,14 @@ html_theme = 'furo'
 html_static_path = ['_static']
 html_css_files = ['custom.css']
 
+# Files copied verbatim to the ROOT of the built site (unlike
+# html_static_path, which nests copied files under '_static/'). Used to
+# serve 'extra/install.sh' at '<pages-base-url>/install.sh', so it can be
+# wget/curled directly -- see the Installation section in index.rst. Keep
+# this file in sync with emwrap/install.sh (the source of truth) when it
+# changes there.
+html_extra_path = ['extra']
+
 # Show only the logo in the sidebar, not the "<project> documentation"
 # text next to/below it (the logo already carries the project name).
 html_theme_options = {
