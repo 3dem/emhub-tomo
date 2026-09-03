@@ -3,11 +3,14 @@ Program Launchers
 
 In **emwrap**, external programs can be defined by specifying "program launchers". The idea of the launcher is to create a bash script that wraps the program call and sets up the necessary environment. For example, the launcher can load cluster modules, source bash files, or set up environment variables. In that way, the code from **emwrap** just needs to call the launcher without taking care of local installation details.
 
+Jobs implemented in **emwrap** itself are launched via ``emh-tomo --launch MODULE`` (configured as the default ``EMWRAP`` launcher in *EMWRAP_CONFIG*, typically ``$ROOT/emh-tomo --launch``). Submitting jobs from the Relion GUI uses the ``relion_dispatcher`` entry in *EMWRAP_CONFIG* (typically ``$ROOT/emh-tomo --submit``).
+
 There is a section in the *EMWRAP_CONFIG* variable related to the launchers:
 
 .. code-block:: json
 
    "programs": {
+        "EMWRAP": {"launcher": "$ROOT/emh-tomo --launch"},
         "WARP": {"launcher": "$SCRIPTS/warp_launcher.sh"},
         "PYTOM": {"launcher": "$SCRIPTS/pytom_launcher.sh"},
         "RELION": {"launcher": "$SCRIPTS/relion_launcher.sh"},

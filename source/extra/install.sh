@@ -253,7 +253,7 @@ python -m emwrap.tomo "$@"
 EOF
 
   chmod 755 "$SCRIPT_FILE"
-  echo -e "    To use it later, run: ${BOLD}./${SCRIPT_FILE} --update|--run|--config ACTION${NORMAL}"
+  echo -e "    To use it later, run: ${BOLD}./${SCRIPT_FILE} --update|--run|--config ACTION|--launch MODULE${NORMAL}"
 }
 
 # ============================================================================
@@ -272,7 +272,7 @@ CURRENT_STEP="creating source directory"
 run_cmd mkdir ${SOURCE}
 clone emtools devel
 clone emhub devel
-clone emwrap jm_simplify_install
+clone emwrap devel
 
 # Generate the activation script matching the environment detected above
 generate_activate_script
