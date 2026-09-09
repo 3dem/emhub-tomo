@@ -12,9 +12,12 @@ Proccessing jobs and projects are compatible with the Relion data model, but ext
 GUI layout. **EMhub-Tomo** provides a web interface based on **emhub** and **ScipionWeb** components for displaying the processing pipeline 
 and visualizing the results. Defined jobs can also be executed from Relion's GUI (*work in progress*).
 
+.. image:: images/emhub-tomo-overview.png
+   :width: 100%
+   :alt: EMhub-tomo architecture overview
 
-Installed in 3 easy steps
--------------------------
+Installation in 3 easy steps
+-----------------------------
 
 #. Create the Python environment and install the sources.
 #. Configure program launchers and cluster queues for your site.

@@ -8,13 +8,13 @@ The following is an example defining three queues: two of them use LSF and the t
 
     "queues": [
         {
-            "name": "cryoem",
+            "name": "cryo",
             "template": "$SCRIPTS/lsf_template.sh",
             "submit": "$SCRIPTS/lsf_submit.sh {job_script}",
             "params": [
                 {
                     "name": "queue_name",
-                    "default": "cryoem",
+                    "default": "cryo",
                     "condition": "false"
                 },
                 {
@@ -52,6 +52,18 @@ The following is an example defining three queues: two of them use LSF and the t
             ]
         }
     ]
+
+The ``queue_name`` Parameter
+------------------------------
+
+Every queue **must** define a ``queue_name`` param. Its value is what gets substituted into the ``template`` and ``submit`` command (e.g. ``--partition={queue_name}`` for SLURM, or ``-q {queue_name}`` for LSF) to actually route the job to that destination queue on the cluster -- without it, the job script would have nowhere to go.
+
+However, ``queue_name`` is set with ``"condition": "false"``, which hides it from the job submission form: since its value is fixed per-queue (via ``default``), there is nothing for the user to choose, so it is passed through automatically rather than shown as an option.
+
+Additional Queue Parameters
+-----------------------------
+
+Besides ``queue_name``, a queue can define any number of extra params that *are* shown to the user in the job submission form, letting them pick job-specific options for that particular queue. In the example above, the ``cryo`` queue adds a ``gpu_type`` param (an ``EnumParam`` with choices ``any``, ``V100``, and ``A100``), so a user submitting to ``cryo`` can request a specific GPU type; its value is then available to the ``template``/``submit`` command as ``{gpu_type}``, just like ``queue_name``. The ``cryo_core`` and ``rtx5000`` queues in this example only define ``queue_name``, so no extra options are shown for them -- but nothing stops a queue from defining several such params, each with its own ``paramClass`` (``EnumParam``, ``StringParam``, ``IntParam``, etc. -- see :doc:`job_forms` for the full list of supported types).
 
 Job Script Template
 --------------------
