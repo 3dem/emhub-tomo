@@ -30,10 +30,10 @@ whichever one is active. See :doc:`python_environment` for how to install conda,
 .. code-block:: bash
 
    # Create a folder for the installation
-   mkdir emstack && cd emstack
+   mkdir emhub && cd emhub
 
    # Create a conda environment and activate it
-   conda create -y --name=emhub-tomo python=3.8 && conda activate emhub-tomo
+   conda create -y --name=emhub python=3.8 && conda activate emhub
 
    # Download and run the install script
    wget -qO- https://3dem.github.io/emhub-tomo/install.sh | bash
