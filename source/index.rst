@@ -21,8 +21,10 @@ Installation in 3 easy steps
 
 #. Create the Python environment and install the sources.
 #. Configure program launchers and cluster queues for your site.
-#. Run some automated tests to ensure the installation is working correctly.
+#. Run automated tests to ensure the installation is working correctly.
 
+
+.. _python-environment:
 
 1. Python environment
 .....................

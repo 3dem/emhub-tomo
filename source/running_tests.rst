@@ -27,53 +27,38 @@ Both tests run against the same tilt-series dataset: the 5 apoferritin (ApoF) ti
 Downloading the dataset
 ........................
 
-Create a folder for the dataset and download the frames, MDOC files, and gain reference from the EMPIAR FTP server:
+Datasets are no longer configured through ``EMWRAP_CONFIG``. Each named dataset is now expected under ``$ROOT/testdata/<NAME>/`` (``ROOT`` is the installation folder, i.e. the directory containing ``emwrap.bashrc``), and **emwrap** can download the known datasets there for you, using the ``data`` action of the same ``./emh-tomo --test`` entry point used to run the tests:
 
 .. code-block:: bash
 
-   mkdir -p WarpTutorialTomo/frames WarpTutorialTomo/mdoc
-   cd WarpTutorialTomo
+   # List available datasets
+   ./emh-tomo --test data --list
 
-   # Gain reference
-   wget ftp://ftp.ebi.ac.uk/empiar/world_availability/10491/data/gain_ref.mrc
+   # Download to $ROOT/testdata/WarpApofTutorial/
+   ./emh-tomo --test data --download WarpApofTutorial
 
-   # MDOC files (one per tilt series)
-   wget -P mdoc ftp://ftp.ebi.ac.uk/empiar/world_availability/10491/data/tiltseries/mdoc/TS_*.mrc.mdoc
+   # Or download to a custom location (PATH/WarpApofTutorial)
+   ./emh-tomo --test data --download WarpApofTutorial /path/to/testdata
 
-   # Raw tilt-image frames
-   wget -P frames ftp://ftp.ebi.ac.uk/empiar/world_availability/10491/data/tiltseries/data/*-*.tif
+``--list`` currently reports two known datasets, ``WarpApofTutorial`` (`EMPIAR-10491 <https://www.ebi.ac.uk/empiar/EMPIAR-10491/>`_, used by both ``apof_warp`` and ``apof_aretomo3``) and ``RelionTomoTutorial`` (`EMPIAR-10164 <https://www.ebi.ac.uk/empiar/EMPIAR-10164/>`_, not yet used by any test) -- the rest of this section only concerns ``WarpApofTutorial``.
 
-Once downloaded, the folder should look like this:
+Once downloaded, ``$ROOT/testdata/WarpApofTutorial/`` should look like this:
 
 .. code-block:: text
 
-   WarpTutorialTomo/
+   testdata/WarpApofTutorial/
    ├── gain_ref.mrc
    ├── mdoc/
-   │   ├── TS_01.mrc.mdoc
-   │   ├── TS_03.mrc.mdoc
+   │   ├── TS_1.mrc.mdoc
+   │   ├── TS_11.mrc.mdoc
    │   └── ...
    └── frames/
-       ├── TS_01_-40.0_...tif
-       ├── TS_01_-37.0_...tif
+       ├── 2Dvs3D_53-1_00001_...tif
        └── ...
 
 This layout matches what the test workflows expect for the ``emw-import-ts`` job (``data/gain_ref.mrc``, ``data/mdoc/*.mdoc``, ``data/frames/``), and reflects the dataset's own acquisition parameters used by the test workflows: a pixel size of 0.789 Å, 300 kV, Cs 2.7 mm, a per-tilt dose of 2.64 e⁻/Å², and a tilt-axis angle of -85.6°.
 
-Configuring the ``testdata`` section
-......................................
-
-Once downloaded, point ``emwrap`` at the dataset by adding a ``testdata`` section to the ``EMWRAP_CONFIG`` JSON in ``emwrap.bashrc`` (see :doc:`index`, Configuration), under the ``WarpApofTutorial`` key:
-
-.. code-block:: json
-
-    "testdata": {
-        "WarpApofTutorial": {
-            "path": "/path/to/WarpTutorialTomo"
-        }
-    }
-
-Both ``apof_warp`` and ``apof_aretomo3`` read this same entry (via ``ProcessingConfig.get_testdata_path('WarpApofTutorial')``) to locate the dataset -- if it is missing, not configured, or does not exist on disk, the tests fail immediately with a message explaining what to fix.
+Both ``apof_warp`` and ``apof_aretomo3`` resolve the dataset automatically at ``$ROOT/testdata/WarpApofTutorial`` (via ``TestData.get_dataset_path('WarpApofTutorial')``) -- no further configuration is needed. If the folder does not exist on disk, the tests fail immediately with a message explaining how to download the data.
 
 
 Common Options
@@ -93,7 +78,7 @@ Both tests share the same base set of options (defined in the shared ``TestApoF`
      - Project folder where the test pipeline is run. When omitted, a temporary folder is created and removed automatically at the end of the test; passing a path keeps the outputs around for inspection.
      - temporary folder
    * - ``--ts NAME``
-     - Restrict the run to a single tilt series (e.g. ``TS_01``) instead of all of them.
+     - Restrict the run to a single tilt series (e.g. ``TS_11``) instead of all of them.
      - ``*`` (all)
    * - ``--gpus``, ``-g N``
      - Number of GPUs to request for GPU-enabled jobs.
@@ -158,4 +143,4 @@ Runs the AreTomo3-based ApoF preprocessing pipeline (``TestAretomo3ApoF``): ``em
    ./emh-tomo --test apof_aretomo3
 
    # Run a single tilt series, keeping outputs, with verbose unittest output
-   ./emh-tomo --test apof_aretomo3 --ts TS_01 --project /tmp/apof_aretomo3_run -v
+   ./emh-tomo --test apof_aretomo3 --ts TS_11 --project /tmp/apof_aretomo3_run -v
