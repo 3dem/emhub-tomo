@@ -238,6 +238,10 @@ set -e
 # Get the directory of the current script
 DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+# '--update' writes 'emwrap.bashrc' and the 'scripts' folder here, next to
+# this script, regardless of the directory the command is run from.
+export EMHUB_TOMO_HOME="${DIR}"
+
 # Prefer 'emwrap.bashrc': it activates the Python environment (by sourcing
 # 'bashrc' itself) AND exports EMWRAP_CONFIG, which the config/check/run
 # actions need. Fall back to the plain 'bashrc' the very first time this

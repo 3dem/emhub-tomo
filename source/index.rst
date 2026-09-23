@@ -152,6 +152,20 @@ in sequence, together with the parameters passed to each. The idea is that proce
 can be exported as workflows and reused in other projects.
 
 
+Tutorials
+---------
+
+Warp ApoF Tutorial
+..................
+
+The :doc:`warp_apof_tutorial` walks through a complete subtomogram averaging pipeline on the ``WarpApofTutorial``
+test dataset (5 apoferritin tilt series from EMPIAR-10491), mixing **Warp**, **PyTOM**, and **Relion**. It covers
+creating and opening a project, loading the two predefined workflows (``apof-warp-tutorial-part1`` for preprocessing,
+particle picking and the first Relion refinement, and ``apof-warp-tutorial-part2`` for the M refinements), working
+with the job forms, and inspecting the results: tomograms with the picked coordinates, the initial model, and the
+final map with its FSC curves after the M refinements.
+
+
 .. toctree::
    :hidden:
 
@@ -165,6 +179,7 @@ can be exported as workflows and reused in other projects.
    python_environment
    launchers
    queues
+   test_data
    running_tests
 
 .. toctree::
@@ -174,5 +189,12 @@ can be exported as workflows and reused in other projects.
 
    job_forms
    tomography_jobs
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+   :hidden:
+
+   warp_apof_tutorial
 
 

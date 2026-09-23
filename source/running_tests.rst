@@ -22,43 +22,14 @@ Tests are exposed as subcommands of the ``./emh-tomo`` entry point, through the 
 Test Data
 ---------
 
-Both tests run against the same tilt-series dataset: the 5 apoferritin (ApoF) tilt series from `EMPIAR-10491 <https://www.ebi.ac.uk/empiar/EMPIAR-10491/>`_, which is also the dataset used by Warp's own `WarpTools tilt series quick start guide <https://warpem.github.io/user_guide/warptools/quick_start_warptools_tilt_series/>`_.
+Both tests run against the same dataset, ``WarpApofTutorial`` (5 apoferritin tilt series from
+EMPIAR-10491) -- see :doc:`test_data` for how to download it, its expected folder layout, and
+the acquisition parameters used when importing it.
 
-Downloading the dataset
-........................
-
-Datasets are no longer configured through ``EMWRAP_CONFIG``. Each named dataset is now expected under ``$ROOT/testdata/<NAME>/`` (``ROOT`` is the installation folder, i.e. the directory containing ``emwrap.bashrc``), and **emwrap** can download the known datasets there for you, using the ``data`` action of the same ``./emh-tomo --test`` entry point used to run the tests:
-
-.. code-block:: bash
-
-   # List available datasets
-   ./emh-tomo --test data --list
-
-   # Download to $ROOT/testdata/WarpApofTutorial/
-   ./emh-tomo --test data --download WarpApofTutorial
-
-   # Or download to a custom location (PATH/WarpApofTutorial)
-   ./emh-tomo --test data --download WarpApofTutorial /path/to/testdata
-
-``--list`` currently reports two known datasets, ``WarpApofTutorial`` (`EMPIAR-10491 <https://www.ebi.ac.uk/empiar/EMPIAR-10491/>`_, used by both ``apof_warp`` and ``apof_aretomo3``) and ``RelionTomoTutorial`` (`EMPIAR-10164 <https://www.ebi.ac.uk/empiar/EMPIAR-10164/>`_, not yet used by any test) -- the rest of this section only concerns ``WarpApofTutorial``.
-
-Once downloaded, ``$ROOT/testdata/WarpApofTutorial/`` should look like this:
-
-.. code-block:: text
-
-   testdata/WarpApofTutorial/
-   ├── gain_ref.mrc
-   ├── mdoc/
-   │   ├── TS_1.mrc.mdoc
-   │   ├── TS_11.mrc.mdoc
-   │   └── ...
-   └── frames/
-       ├── 2Dvs3D_53-1_00001_...tif
-       └── ...
-
-This layout matches what the test workflows expect for the ``emw-import-ts`` job (``data/gain_ref.mrc``, ``data/mdoc/*.mdoc``, ``data/frames/``), and reflects the dataset's own acquisition parameters used by the test workflows: a pixel size of 0.789 Å, 300 kV, Cs 2.7 mm, a per-tilt dose of 2.64 e⁻/Å², and a tilt-axis angle of -85.6°.
-
-Both ``apof_warp`` and ``apof_aretomo3`` resolve the dataset automatically at ``$ROOT/testdata/WarpApofTutorial`` (via ``TestData.get_dataset_path('WarpApofTutorial')``) -- no further configuration is needed. If the folder does not exist on disk, the tests fail immediately with a message explaining how to download the data.
+Both ``apof_warp`` and ``apof_aretomo3`` resolve the dataset automatically at
+``$ROOT/testdata/WarpApofTutorial`` (via ``TestData.get_dataset_path('WarpApofTutorial')``) --
+no further configuration is needed. If the folder does not exist on disk, the tests fail
+immediately with a message explaining how to download it.
 
 
 Common Options
