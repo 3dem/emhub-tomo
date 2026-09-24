@@ -90,6 +90,8 @@ In **emwrap**, external programs can be defined by specifying "program launchers
 Launchers are configured in the *programs* section of the *EMWRAP_CONFIG* variable, and after installation a *scripts* folder is created with example launcher scripts that you will likely need to adapt to your environment. Jobs implemented in **emwrap** use ``$ROOT/emh-tomo --launch`` as the ``EMWRAP`` launcher (no separate shell script).
 
 See :doc:`launchers` for the *programs* configuration example and detailed launcher examples (Warp, Relion, and others).
+The list of supported programs, the versions tested with **EMhub-Tomo**, and links to their installation
+instructions are in the :ref:`supported-programs` table.
 
 
 2.2 Cluster Queues

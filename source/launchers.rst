@@ -14,14 +14,82 @@ There is a section in the *EMWRAP_CONFIG* variable related to the launchers:
         "WARP": {"launcher": "$SCRIPTS/warp_launcher.sh"},
         "PYTOM": {"launcher": "$SCRIPTS/pytom_launcher.sh"},
         "RELION": {"launcher": "$SCRIPTS/relion_launcher.sh"},
-        "IMOD": {"launcher": "$SCRIPTS/imod_launcher.sh"},
         "MOTIONCOR2": {"launcher": "$SCRIPTS/motioncor2.sh"},
         "MOTIONCOR3": {"launcher": "$SCRIPTS/motioncor3.sh"},
         "ARETOMO2": {"launcher": "$SCRIPTS/aretomo2.sh"},
         "ARETOMO3": {"launcher": "$SCRIPTS/aretomo3.sh"},
+        "IMOD": {"launcher": "$SCRIPTS/imod_launcher.sh"},
         "CTFFIND": {"launcher": "$SCRIPTS/ctffind5.sh", "version": 5},
-        "CRYOCARE": {"launcher": "$SCRIPTS/cryocare_launcher.sh"}
+        "CRYOCARE": {"launcher": "$SCRIPTS/cryocare_launcher.sh"},
+        "DENOISET": {"launcher": "$SCRIPTS/denoiset_launcher.sh"},
+        "MISSALIGNMENT": {"launcher": "$SCRIPTS/missalignment.sh"}
     }
+
+.. _supported-programs:
+
+Supported Programs
+------------------
+
+The table below lists the external programs that **EMhub-Tomo** runs under the hood, the version
+set in the launcher templates shipped with **emwrap** (``emwrap/config/scripts``), and where to find
+installation instructions. These are the versions used for development and testing. Other
+versions may work, but they have not been tested. Most programs are also available through
+`SBGrid <https://sbgrid.org/>`_, which is how several of the example launchers load them.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 16 16 22 20 26
+
+   * - Program
+     - Config key
+     - Launcher template
+     - Tested version
+     - Installation
+   * - Warp / WarpTools / M
+     - ``WARP``
+     - ``warp_launcher.sh``
+     - 2.0.0dev36
+     - `Warp installation <https://warpem.github.io/warp/user_guide/warptools/installation/>`_
+   * - RELION
+     - ``RELION``
+     - ``relion_launcher.sh``
+     - 5.1.0-beta (CUDA 13.0)
+     - `RELION installation <https://relion.readthedocs.io/en/release-5.0/Installation.html>`_
+   * - pytom-match-pick
+     - ``PYTOM``
+     - ``pytom_launcher.sh``
+     - 0.13.2
+     - `pytom-match-pick docs <https://sbc-utrecht.github.io/pytom-match-pick/>`_
+   * - AreTomo2
+     - ``ARETOMO2``
+     - ``aretomo2.sh``
+     - 1.0.0
+     - `AreTomo2 on GitHub <https://github.com/czimaginginstitute/AreTomo2>`_
+   * - AreTomo3
+     - ``ARETOMO3``
+     - ``aretomo3.sh``
+     - 2.2.8
+     - `AreTomo3 on GitHub <https://github.com/czimaginginstitute/AreTomo3>`_
+   * - IMOD
+     - ``IMOD``
+     - ``imod_launcher.sh``
+     - 5.1.9
+     - `IMOD download <https://bio3d.colorado.edu/imod/download.html>`_
+   * - DenoisET
+     - ``DENOISET``
+     - ``denoiset.sh``
+     - conda env ``denoiset``
+     - `DenoisET on GitHub <https://github.com/apeck12/denoiset>`_
+   * - MissAlignment
+     - ``MISSALIGNMENT``
+     - ``missalignment.sh``
+     - conda env ``miss-alignment``
+     - `MissAlignment on GitHub <https://github.com/warpem/miss-alignment>`_
+
+.. note::
+
+   The Warp tilt-series alignment job (``emw-warp-tsalign``) also calls AreTomo2/AreTomo3 or IMOD,
+   depending on the alignment method selected, so those launchers must work for the Warp pipeline too.
 
 After the installation, there is a *scripts* folder that is created with some of the launcher scripts, but YOU MIGHT NEED TO MODIFY them to work in your environment. In the following sections, there are some examples of launchers.
 
